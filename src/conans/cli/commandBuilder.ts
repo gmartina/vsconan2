@@ -90,7 +90,7 @@ export class CommandBuilder {
         }
 
         if (cfg.installFolder !== "" && cfg.installFolder !== undefined) {
-            cmd.push.apply(cmd, ["-if", utils.workspace.getAbsolutePathFromWorkspace(wsPath, cfg.installFolder)]);
+            cmd.push.apply(cmd, ["--output-folder", utils.workspace.getAbsolutePathFromWorkspace(wsPath, cfg.installFolder)]);
         }
 
         cmd.push.apply(cmd, cfg.args);
@@ -124,7 +124,7 @@ export class CommandBuilder {
         }
 
         if (cfg.installFolder !== "" && cfg.installFolder !== undefined) {
-            cmd.push.apply(cmd, ["-if", utils.workspace.getAbsolutePathFromWorkspace(wsPath, cfg.installFolder)]);
+            cmd.push.apply(cmd, ["--output-folder", utils.workspace.getAbsolutePathFromWorkspace(wsPath, cfg.installFolder)]);
         }
 
         if (cfg.buildFolder !== "" && cfg.buildFolder !== undefined) {
@@ -172,7 +172,7 @@ export class CommandBuilder {
         }
 
         if (cfg.installFolder !== "" && cfg.installFolder !== undefined) {
-            cmd.push.apply(cmd, ["-if", utils.workspace.getAbsolutePathFromWorkspace(wsPath, cfg.installFolder)]);
+            cmd.push.apply(cmd, ["--output-folder", utils.workspace.getAbsolutePathFromWorkspace(wsPath, cfg.installFolder)]);
         }
 
         if (cfg.sourceFolder !== "" && cfg.sourceFolder !== undefined) {
@@ -208,7 +208,7 @@ export class CommandBuilder {
         }
 
         if (cfg.installFolder !== "" && cfg.installFolder !== undefined) {
-            cmd.push.apply(cmd, ["-if", utils.workspace.getAbsolutePathFromWorkspace(wsPath, cfg.installFolder)]);
+            cmd.push.apply(cmd, ["--output-folder", utils.workspace.getAbsolutePathFromWorkspace(wsPath, cfg.installFolder)]);
         }
 
         if (cfg.buildFolder !== "" && cfg.buildFolder !== undefined) {

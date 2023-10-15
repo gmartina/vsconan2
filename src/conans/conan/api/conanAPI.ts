@@ -186,7 +186,7 @@ export class Conan1API extends ConanAPI {
         // We will use the VSConan home folder under user home folder
         let jsonPath: string = path.join(utils.vsconan.getVSConanHomeDirTemp(), jsonName);
 
-        execSync(`${this.conanExecutor} search --raw --json ${jsonPath}`);
+        execSync(`${this.conanExecutor} search * --format=json > ${jsonPath}`);
 
         // Check if the file exists
         // With this check it validates if the conan command executed correctly without error
@@ -198,34 +198,22 @@ export class Conan1API extends ConanAPI {
             // The result in the JSON file from contains an error flag
             // If this contains error, the file will not be processed
             if (!recipeJson.error) {
-                // Double check if there is data inside by checking the length of the array
-                if (recipeJson.results.length > 0) {
-                    // Example of the JSON format looks as following
-                    // {
-                    //   "error": false,
-                    //   "results": [
-                    //     {
-                    //       "remote": null,
-                    //       "items": [
-                    //         {
-                    //           "recipe": {
-                    //             "id": "ade/0.1.1f"
-                    //           }
-                    //         },
-                    //         {
-                    //           "recipe": {
-                    //             "id": "boost/1.77.0"
-                    //           }
-                    //         }
-                    //       ]
-                    //     }
-                    //   ]
-                    // }
-                    let recipeItems = recipeJson.results[0].items;
+                // Example of the JSON format looks as following
+                //{
+                //    "conancenter": {
+                //        "7bitconf/1.0.0": {},
+                //        "7bitconf/1.1.0": {},
+                //        "7bitdi/1.0.0": {},
+                //        "7zip/19.00": {},
+                //        "7zip/22.01": {},
+                //        "aaf/1.2.0": {}
+                //    }
+                //}
 
-                    for (let recipe of recipeItems) {
-                        arrayRecipeList.push(new ConanRecipe(recipe.recipe.id, false, ""));
-                    }
+                let recipeItems = Object.keys(recipeJson.conancenter);
+
+                for (let recipe of recipeItems) {
+                    arrayRecipeList.push(new ConanRecipe(recipe, false, ""));
                 }
             }
             else {
@@ -247,7 +235,7 @@ export class Conan1API extends ConanAPI {
 
         let jsonPath: string = path.join(utils.vsconan.getVSConanHomeDirTemp(), jsonName);
 
-        execSync(`${this.conanExecutor} profile list --json ${jsonPath}`);
+        execSync(`${this.conanExecutor} profile list --format=json > ${jsonPath}`);
 
         if (fs.existsSync(jsonPath)) {
             let tempFile = fs.readFileSync(jsonPath, 'utf8');
@@ -286,11 +274,23 @@ export class Conan1API extends ConanAPI {
                 recipeName = recipe;
             }
 
-            execSync(`${this.conanExecutor} search ${recipeName} --json ${jsonPath}`);
+            execSync(`${this.conanExecutor} list ${recipeName} --format=json > ${jsonPath}`);
 
             // Check if the file exists
             // With this check it validates if the conan command executed correctly without error
             // No JSON file will be written if the command is not executed correctly
+
+            //if (fs.existsSync(jsonPath)) {
+            //    let tempFile = fs.readFileSync(jsonPath, 'utf8');
+            //    let remoteJson = JSON.parse(tempFile);
+    //
+            //    let remoteItemList = remoteJson.remotes;
+    //
+            //    for (let remote of remoteItemList) {
+            //        arrayRemoteList.push(new ConanRemote(remote.name, remote.url, remote.verify_ssl, remote.disabled ? false : true));
+            //    }
+            //}
+
             if (fs.existsSync(jsonPath)) {
                 let tempFile = fs.readFileSync(jsonPath, 'utf8');
                 let recipeJson = JSON.parse(tempFile);
@@ -300,7 +300,7 @@ export class Conan1API extends ConanAPI {
                 if (!recipeJson.error) {
                     // Double check if there is data inside by checking the length of the array
                     if (recipeJson.results.length > 0) {
-                        let packageItems = recipeJson.results[0].items[0].packages;
+                        let packageItems = recipeJson.test["No. of interfaces"];
 
                         for (let pkg of packageItems) {
                             arrayPackageList.push(new ConanPackage(pkg.id, false, pkg.options, pkg.outdated, pkg.requires, pkg.settings));
@@ -358,11 +358,11 @@ export class Conan1API extends ConanAPI {
     }
 
     public override removePackage(recipe: string, packageId: string) {
-        execSync(`${this.conanExecutor} remove ${recipe} -p ${packageId} -f`);
+        execSync(`${this.conanExecutor} remove ${recipe} -p ${packageId} -c`);
     }
 
     public override removeRecipe(recipe: string) {
-        execSync(`${this.conanExecutor} remove ${recipe} -f`);
+        execSync(`${this.conanExecutor} remove ${recipe} -c`);
     }
 
     public override removeProfile(profile: string) {
@@ -437,7 +437,7 @@ export class Conan1API extends ConanAPI {
 
         let jsonPath: string = path.join(utils.vsconan.getVSConanHomeDirTemp(), jsonName);
 
-        execSync(`${this.conanExecutor} inspect ${recipeName} --json ${jsonPath}`);
+        execSync(`${this.conanExecutor} inspect ${recipeName} --format=json > ${jsonPath}`);
 
         // Check if the file exists
         // With this check it validates if the conan command executed correctly without error
@@ -541,6 +541,7 @@ export class Conan1API extends ConanAPI {
     }
 
     public override getRecipeAttribute(recipePath: string, attribute: string) {
+        //TODO: raw is deprecated
         let res = execSync(`${this.conanExecutor} inspect ${recipePath} --raw ${attribute}`).toString();
 
         let stringList = [];
