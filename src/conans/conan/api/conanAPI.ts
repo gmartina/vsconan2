@@ -209,11 +209,13 @@ export class Conan1API extends ConanAPI {
                 //        "aaf/1.2.0": {}
                 //    }
                 //}
-
-                let recipeItems = Object.keys(recipeJson.conancenter);
-
-                for (let recipe of recipeItems) {
-                    arrayRecipeList.push(new ConanRecipe(recipe, false, ""));
+                let remoteItems = Object.keys(recipeJson);
+                for (let remote of remoteItems) {
+                    let recipeItems = recipeJson[remote];
+                    let recipeItemsList = Object.keys(recipeItems);
+                    for (let recipe of recipeItemsList) {
+                        arrayRecipeList.push(new ConanRecipe(recipe, false, ""));
+                    }
                 }
             }
             else {
